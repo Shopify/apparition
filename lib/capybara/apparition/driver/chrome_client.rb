@@ -66,6 +66,9 @@ module Capybara::Apparition
     end
 
     def send_cmd_to_session(session_id, command, params)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "send_cmd_to_session called #{session_id.to_json} : #{command.to_json} : #{params.to_json}"
+      end
       time = Time.now
       msg_id, msg = generate_msg(command, params)
       wrapper_msg_id = send_msg('Target.sendMessageToTarget', sessionId: session_id, message: msg)
@@ -99,7 +102,13 @@ module Capybara::Apparition
     end
 
     def generate_msg(command, params)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "generate_msg called #{command.to_json} : #{params.to_json}"
+      end
       @send_mutex.synchronize do
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "inside send_mutex"
+        end
         msg_id = generate_unique_id
         [msg_id, { method: command, params: params, id: msg_id }.to_json]
       end
