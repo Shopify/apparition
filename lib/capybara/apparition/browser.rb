@@ -168,9 +168,6 @@ module Capybara::Apparition
         f.puts "command_for_session: #{session_id.to_json} : #{name.to_json} : #{params.to_json}"
       end
       client.send_cmd_to_session(session_id, name, params)
-      open('/tmp/scan.log', 'a') do |f|
-        f.puts "sent command_for_session"
-      end
     rescue DeadClient
       open('/tmp/scan.log', 'a') do |f|
         f.puts "DEAD CLIENT"
