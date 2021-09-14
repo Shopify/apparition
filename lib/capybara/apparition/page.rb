@@ -241,6 +241,9 @@ module Capybara::Apparition
     attr_reader :status_code
 
     def wait_for_loaded(allow_obsolete: false)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "wait_for_loaded called"
+      end
       # We can't reliably detect if the page is loaded, so just ensure the context
       # is usable
       timer = Capybara::Helpers.timer(expire_in: 30)
@@ -251,19 +254,34 @@ module Capybara::Apparition
                            contextId: current_frame.context_id,
                            returnByValue: false,
                            awaitPromise: true)
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "process_response will be called"
+        end
         process_response(response)
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "process_response returned"
+        end
         current_frame.loaded!
       rescue # rubocop:disable Style/RescueStandardError
         return if allow_obsolete && current_frame.obsolete?
 
         unless timer.expired?
+          open('/tmp/scan.log', 'a') do |f|
+            f.puts "timer.expired?"
+          end
           sleep 0.05
           retry
+        end
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "Will raise TimeoutError"
         end
         puts 'Timedout waiting for page to be loaded' if ENV['DEBUG']
         raise TimeoutError.new('wait_for_loaded')
       end
 
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "will raise JavascriptError"
+      end
       raise JavascriptError.new(js_error) if @js_error
     end
 
@@ -294,6 +312,9 @@ module Capybara::Apparition
     end
 
     def current_url
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "current_url called"
+      end
       wait_for_loaded
       _raw_evaluate('window.location.href', context_id: main_frame.context_id)
     end
