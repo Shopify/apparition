@@ -95,6 +95,9 @@ module Capybara::Apparition
     def send_msg(command, params)
       msg_id, msg = generate_msg(command, params)
       @send_mutex.synchronize do
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "inside send_msg mutex"
+        end
         puts "#{Time.now.to_i}: sending msg: #{msg}" if ENV['DEBUG'] == 'V'
         @ws.send_msg(msg)
       end
@@ -107,7 +110,7 @@ module Capybara::Apparition
       end
       @send_mutex.synchronize do
         open('/tmp/scan.log', 'a') do |f|
-          f.puts "inside send_mutex"
+          f.puts "inside generate_msg mutex"
         end
         msg_id = generate_unique_id
         [msg_id, { method: command, params: params, id: msg_id }.to_json]
