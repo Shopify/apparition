@@ -17,6 +17,9 @@ module Capybara::Apparition
     end
 
     def send_msg(msg)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "sending message : #{msg}"
+      end
       driver.text msg
     end
 

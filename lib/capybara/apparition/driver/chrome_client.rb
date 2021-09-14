@@ -72,7 +72,14 @@ module Capybara::Apparition
       time = Time.now
       msg_id, msg = generate_msg(command, params)
       wrapper_msg_id = send_msg('Target.sendMessageToTarget', sessionId: session_id, message: msg)
-      Response.new(self, wrapper_msg_id, msg_id, send_time: time)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "message sent : #{wrapper_msg_id}"
+      end
+      response = Response.new(self, wrapper_msg_id, msg_id, send_time: time)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "response received : #{wrapper_msg_id}"
+      end
+      response
     end
 
     def add_async_id(msg_id)
