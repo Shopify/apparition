@@ -249,6 +249,9 @@ module Capybara::Apparition
       timer = Capybara::Helpers.timer(expire_in: 30)
       page_function = '(function(){ return 1 == 1; })()'
       begin
+        open('/tmp/scan.log', 'a') do |f|
+          f.puts "Runtime evaluate: #{current_frame.context_id}"
+        end
         response = command('Runtime.evaluate',
                            expression: page_function,
                            contextId: current_frame.context_id,
@@ -383,6 +386,9 @@ module Capybara::Apparition
     end
 
     def command(name, **params)
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "command called with params: #{params.to_json}"
+      end
       @browser.command_for_session(@session.session_id, name, params).result
     end
 
