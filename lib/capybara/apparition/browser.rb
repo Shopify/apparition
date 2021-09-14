@@ -169,6 +169,9 @@ module Capybara::Apparition
       end
       client.send_cmd_to_session(session_id, name, params)
     rescue DeadClient
+      open('/tmp/scan.log', 'a') do |f|
+        f.puts "DEAD CLIENT"
+      end
       restart
       raise
     end
