@@ -109,6 +109,8 @@ module Capybara::Apparition
     def wait_for_msg_response(msg_id)
       @msg_mutex.synchronize do
         timer = Capybara::Helpers.timer(expire_in: @timeout)
+        # Wait a short time to avoid timer.expired? raising a Capybara::FrozenInTime if processed too quickly (i.e timer.stalled? == true)
+        sleep 0.01
         while (response = @responses.delete(msg_id)).nil?
           if @timeout && timer.expired?
             puts "Timedout waiting for response for msg: #{msg_id}"
