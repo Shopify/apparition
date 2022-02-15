@@ -56,7 +56,7 @@ module Capybara::Apparition
           @pid = wait_thr.pid
 
           @out_thread = Thread.new do
-            while !@stdout_stderr.eof? && (data = @stdout_stderr.readpartial(512))
+            while !@stdout_stderr.eof? && (data = @stdout_stderr.gets)
               @output << data
             end
           end
