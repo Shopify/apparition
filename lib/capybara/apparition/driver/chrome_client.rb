@@ -3,6 +3,8 @@
 require 'capybara/apparition/errors'
 require 'capybara/apparition/driver/web_socket_client'
 require 'capybara/apparition/driver/response'
+require 'net/http'
+require 'uri'
 
 module Capybara::Apparition
   class ChromeClient
