@@ -80,6 +80,8 @@ module Capybara::Apparition
     include Auth
 
     def reset
+      puts "Calling reset" if ENV['DEBUG']
+
       new_context_id = command('Target.createBrowserContext')['browserContextId']
       new_target_response = client.send_cmd('Target.createTarget', url: 'about:blank', browserContextId: new_context_id)
 
@@ -96,8 +98,12 @@ module Capybara::Apparition
                     url_blacklist: @url_blacklist,
                     url_whitelist: @url_whitelist).send(:main_frame).loaded!
 
+      puts "Init timer" if ENV['DEBUG']
       timer = Capybara::Helpers.timer(expire_in: 10)
+
       until @pages[new_target_id].usable?
+        puts "Timer expired? #{timer.expired?}" if ENV['DEBUG']  
+
         if timer.expired?
           puts 'Timedout waiting for reset'
           raise TimeoutError, 'reset'
