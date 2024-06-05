@@ -71,7 +71,7 @@ module Capybara::Apparition
     end
 
     def quit
-      @client&.send_cmd("Browser.close", {})
+      browser.command("Browser.close") if options[:remote]
       @client&.stop
       @launcher&.stop
     end
