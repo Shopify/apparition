@@ -42,6 +42,7 @@ module Capybara::Apparition
       @message_available = ConditionVariable.new
       @session_handlers = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = [] } }
       @timeout = nil
+      @stopping = false
       @async_ids = []
 
       start_threads
@@ -50,8 +51,14 @@ module Capybara::Apparition
     attr_accessor :timeout
 
     def stop
-      @ws.close
-      @events.push(nil)
+      begin
+        @stopping = true
+        send_cmd('Browser.close', {})
+      rescue
+      ensure
+        @ws.close
+        @events.push(nil)
+      end
     end
 
     def on(event_name, session_id = nil, &block)
@@ -162,7 +169,7 @@ module Capybara::Apparition
 
     def cleanup_async_responses
       loop do
-        break if [:closing, :closed].include?(@ws.driver.state)
+        break if [:closing, :closed].include?(@ws.driver.state) || @stopping
         @msg_mutex.synchronize do
           @message_available.wait(@msg_mutex, 0.1)
           (@responses.keys & @async_ids).each do |msg_id|
@@ -177,7 +184,7 @@ module Capybara::Apparition
     def process_messages
       # run handlers in own thread so as not to hang message processing
       loop do
-        break if [:closing, :closed].include?(@ws.driver.state)
+        break if [:closing, :closed].include?(@ws.driver.state) || @stopping
         event = @events.pop
         next unless event
 
