@@ -54,9 +54,9 @@ module Capybara::Apparition
       begin
         @stopping = true
         send_cmd('Browser.close', {})
+        @ws.close
       rescue
       ensure
-        @ws.close
         @events.push(nil)
       end
     end
