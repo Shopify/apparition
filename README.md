@@ -1,3 +1,5 @@
+> **This repository is no longer maintained.** It has been archived by Shopify and receives no updates or security fixes.
+
 # Apparition - A Chrome driver for Capybara #
 
 [![Build Status](https://secure.travis-ci.org/twalpole/apparition.svg)](http://travis-ci.org/twalpole/apparition)
